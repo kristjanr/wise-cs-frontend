@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
-// @ts-ignore
 import TagManager from 'react-gtm-module'
 
 const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/`
@@ -18,13 +17,14 @@ const PERSON_NAME = 'You'
 
 interface BotResponse {
     answer: string;
-    urls_used: string[];
+    urls_used: string[]
 }
 
 interface Message {
+    id: number;
     name: string;
-    side: 'left' | 'right';
-    text: MessageContent;
+    side: 'left' | 'right'
+    text: MessageContent
     time: Date | string; // Use 'string' if the date will be stored as a string
 }
 
@@ -49,6 +49,7 @@ const Chatbot = () => {
         const localData = localStorage.getItem('messages')
         return localData ? JSON.parse(localData) : [
             {
+                id: new Date().getTime(),
                 name: BOT_NAME,
                 side: 'left',
                 text: {type: 'text', data: 'How may I help You?'},
@@ -62,6 +63,7 @@ const Chatbot = () => {
     }, [messages])
     const appendMessage = (name: string, side: 'left' | 'right', text: MessageContent) => {
         const newMessage = {
+            id: new Date().getTime(),
             name,
             side,
             text,
@@ -101,8 +103,8 @@ const Chatbot = () => {
             <h2 className="title">An LLM-powered Customer Support Agent for Wise</h2>
             <section className="msger">
                 <main className="msger-chat">
-                    {messages.map((message: Message, index: React.Key) => (
-                        <div key={index} className={`msg ${message.side}-msg`}>
+                    {messages.map((message: Message) => (
+                        <div key={message.id} className={`msg ${message.side}-msg`}>
                             <div className="msg-img-container">
                                 <img className="msg-img" src={getImage(message.name)} alt="Profile"/>
                             </div>
