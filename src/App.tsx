@@ -3,6 +3,8 @@ import axios from 'axios'
 // @ts-ignore
 import TagManager from 'react-gtm-module'
 
+const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/`
+
 const tagManagerArgs = {
     gtmId: 'G-922DE7HPS1'
 }
@@ -69,7 +71,7 @@ const Chatbot = () => {
     }
     const botResponse = async (rawText: string) => {
         try {
-            const response = await axios.get<BotResponse>('/answer', {params: {question: rawText}})
+            const response = await axios.get<BotResponse>(backendUrl + 'answer', {params: {question: rawText}})
             const data = response.data
 
             const msgText: MessageContent = {type: 'text', data: data.answer}
