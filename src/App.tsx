@@ -71,7 +71,7 @@ const Chatbot = () => {
     }
     const botResponse = async (rawText: string) => {
         try {
-            const response = await axios.get<BotResponse>(backendUrl + 'answer', {params: {question: rawText}})
+            const response = await axios.get<BotResponse>(backendUrl + 'answer', {params: {question: rawText}, withCredentials: true,})
             const data = response.data
 
             const msgText: MessageContent = {type: 'text', data: data.answer}
