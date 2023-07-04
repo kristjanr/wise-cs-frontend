@@ -178,3 +178,28 @@ button {
   text-align: center;
   color: gray;
 }
+
+.n-tokens-used {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  z-index: 9999;
+  width: 180px; /* Adjust the width as desired */
+}
+
+.reset-session-btn {
+  margin-top: 5px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 3px 8px; /* Adjust the padding to make the button smaller */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px; /* Optionally adjust the font size for the button */
+}
+

@@ -19,6 +19,7 @@ const PERSON_NAME = 'You'
 interface BotResponse {
     answer: string;
     urls_used: string[];
+    n_tokens_used: number;
 }
 
 interface Message {
@@ -57,6 +58,9 @@ const Chatbot = () => {
         ]
     })
     const [inputText, setInputText] = useState('')
+    const [nTokensUsed, setNTokensUsed] = useState(0);
+    const [shouldSendCookie, setShouldSendCookie] = useState(true);
+
     useEffect(() => {
         localStorage.setItem('messages', JSON.stringify(messages))
     }, [messages])
@@ -70,8 +74,10 @@ const Chatbot = () => {
         setMessages((prevMessages: any) => [...prevMessages, newMessage])
     }
     const botResponse = async (rawText: string) => {
+        const config = {params: {question: rawText}, withCredentials: shouldSendCookie,};
         try {
-            const response = await axios.get<BotResponse>(backendUrl + 'answer', {params: {question: rawText}, withCredentials: true,})
+            const response = await axios.get<BotResponse>(backendUrl + 'answer', config)
+            setShouldSendCookie(true);
             const data = response.data
 
             const msgText: MessageContent = {type: 'text', data: data.answer}
@@ -81,16 +87,29 @@ const Chatbot = () => {
                 const msgLinks: MessageContent = {type: 'links', data: data.urls_used}
                 appendMessage(BOT_NAME, 'left', msgLinks)
             }
+            setNTokensUsed(data.n_tokens_used); // Set the n_tokens_used value
+
         } catch (error) {
             console.error(error)
         }
     }
 
+    const handleResetSession = () => {
+        setMessages([
+            {
+                name: BOT_NAME,
+                side: 'left',
+                text: { type: 'text', data: 'Session reset. How may I help you?' },
+                time: new Date(),
+            },
+        ]);
+        localStorage.removeItem('messages');
+        axios.get(`${backendUrl}logout`);
 
+    };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!inputText) return
-
         appendMessage(PERSON_NAME, 'right', {type: 'text', data: inputText})
         setInputText('')
         botResponse(inputText)
@@ -99,6 +118,14 @@ const Chatbot = () => {
     return (
         <section className="container">
             <h2 className="title">An LLM-powered Customer Support Agent for Wise</h2>
+            <div className="n-tokens-used">
+                {nTokensUsed} tokens used
+            <div>
+                <button className="reset-session-btn" onClick={handleResetSession}>
+                    Reset Session
+                </button>
+            </div>
+            </div>
             <section className="msger">
                 <main className="msger-chat">
                     {messages.map((message: Message, index: React.Key) => (
