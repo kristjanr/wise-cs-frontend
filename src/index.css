@@ -203,3 +203,29 @@ button {
   font-size: 12px; /* Optionally adjust the font size for the button */
 }
 
+.feedback-button {
+  color: #888;
+  font-weight: bold;
+  padding: 3px 3px;
+  border: none;
+  background: none;
+  transition: color 0.3s;
+  font-size: 0.5em; /* Makes the icons twice smaller */
+}
+
+.feedback-button-thumbs-up {
+  margin-left: 20px;
+}
+
+.feedback-button-thumbs-up:hover {
+  color: #3498db;
+}
+
+.feedback-button-thumbs-down {
+  margin-left: 1px;
+}
+
+.feedback-button-thumbs-down:hover {
+  color: #e74c3c;
+}
+

@@ -2,8 +2,9 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 // @ts-ignore
 import TagManager from 'react-gtm-module'
+import FeedbackForm from "./FeedbackForm";
 
-const backendUrl = `${process.env.REACT_APP_BACKEND_URL}/`
+const backendUrl = `${process.env.REACT_APP_BACKEND_URL}`
 
 const tagManagerArgs = {
     gtmId: 'G-922DE7HPS1'
@@ -20,6 +21,7 @@ interface BotResponse {
     answer: string;
     urls_used: string[];
     n_tokens_used: number;
+    id: number;
 }
 
 interface Message {
@@ -30,8 +32,10 @@ interface Message {
 }
 
 type MessageContent =
-    | { type: 'text'; data: string }
-    | { type: 'links'; data: string[] };
+    | {
+    type: 'text'; data: string, id: number | undefined
+}
+    | { type: 'links'; data: string[], id: number | undefined }
 
 
 const formatDate = (date: Date | string): string => {
@@ -59,7 +63,6 @@ const Chatbot = () => {
     })
     const [inputText, setInputText] = useState('')
     const [nTokensUsed, setNTokensUsed] = useState(0);
-    const [shouldSendCookie, setShouldSendCookie] = useState(true);
 
     useEffect(() => {
         localStorage.setItem('messages', JSON.stringify(messages))
@@ -74,17 +77,16 @@ const Chatbot = () => {
         setMessages((prevMessages: any) => [...prevMessages, newMessage])
     }
     const botResponse = async (rawText: string) => {
-        const config = {params: {question: rawText}, withCredentials: shouldSendCookie,};
+        const config = {params: {question: rawText}, withCredentials: true,};
         try {
-            const response = await axios.get<BotResponse>(backendUrl + 'answer', config)
-            setShouldSendCookie(true);
+            const response = await axios.get<BotResponse>(backendUrl + '/answer', config)
             const data = response.data
 
-            const msgText: MessageContent = {type: 'text', data: data.answer}
+            const msgText: MessageContent = {type: 'text', data: data.answer, id: data.id}
             appendMessage(BOT_NAME, 'left', msgText)
 
             if (data.urls_used.length > 0) {
-                const msgLinks: MessageContent = {type: 'links', data: data.urls_used}
+                const msgLinks: MessageContent = {type: 'links', data: data.urls_used, id: undefined}
                 appendMessage(BOT_NAME, 'left', msgLinks)
             }
             setNTokensUsed(data.n_tokens_used); // Set the n_tokens_used value
@@ -99,18 +101,18 @@ const Chatbot = () => {
             {
                 name: BOT_NAME,
                 side: 'left',
-                text: { type: 'text', data: 'Session reset. How may I help you?' },
+                text: {type: 'text', data: 'Session reset. How may I help you?', id: undefined},
                 time: new Date(),
             },
         ]);
         localStorage.removeItem('messages');
-        axios.get(`${backendUrl}logout`);
+        axios.get(`${backendUrl}/logout`);
 
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!inputText) return
-        appendMessage(PERSON_NAME, 'right', {type: 'text', data: inputText})
+        appendMessage(PERSON_NAME, 'right', {type: 'text', data: inputText, id: undefined})
         setInputText('')
         botResponse(inputText)
     }
@@ -120,31 +122,36 @@ const Chatbot = () => {
             <h2 className="title">An LLM-powered Customer Support Agent for Wise</h2>
             <div className="n-tokens-used">
                 {nTokensUsed} tokens used
-            <div>
-                <button className="reset-session-btn" onClick={handleResetSession}>
-                    Reset Session
-                </button>
-            </div>
+                <div>
+                    <button className="reset-session-btn" onClick={handleResetSession}>
+                        Reset Session
+                    </button>
+                </div>
             </div>
             <section className="msger">
                 <main className="msger-chat">
                     {messages.map((message: Message, index: React.Key) => (
                         <div key={index} className={`msg ${message.side}-msg`}>
+
                             <div className="msg-img-container">
                                 <img className="msg-img" src={getImage(message.name)} alt="Profile"/>
                             </div>
                             <div className="msg-bubble">
+
                                 <div className="msg-info">
                                     <div className="msg-info-name">{message.name}</div>
                                     <div className="msg-info-time">{formatDate(message.time)}</div>
+                                    {message.name === BOT_NAME && message.text.id && <FeedbackForm messageId={message.text.id} />}
                                 </div>
                                 <div className="msg-text">
                                     {message.text.type === 'text' && message.text.data}
+
                                     {message.text.type === 'links' && (
                                         <>
                                             <div>These help articles were used to answer your question:</div>
                                             {message.text.data.map((url, index) => (<>
-                                                    <a key={index} href={url} target="_blank" rel="noopener noreferrer">{url}</a><br/>
+                                                    <a key={index} href={url} target="_blank"
+                                                       rel="noopener noreferrer">{url}</a><br/>
                                                 </>
                                             ))}
                                         </>
@@ -185,5 +192,6 @@ const Chatbot = () => {
         </section>
     )
 }
+
 
 export default Chatbot
