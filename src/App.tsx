@@ -76,6 +76,18 @@ const Chatbot = () => {
         }
         setMessages((prevMessages: any) => [...prevMessages, newMessage])
     }
+    useEffect(() => {
+        const login = async () => {
+            try {
+                await axios.get(`${backendUrl}/login`, {withCredentials: true});
+                console.log('Logged in successfully');
+            } catch (error) {
+                console.error('Error logging in', error);
+            }
+        };
+
+        login();
+    }, []);
     const botResponse = async (rawText: string) => {
         const config = {params: {question: rawText}, withCredentials: true,};
         try {
@@ -106,7 +118,8 @@ const Chatbot = () => {
             },
         ]);
         localStorage.removeItem('messages');
-        axios.get(`${backendUrl}/logout`);
+        setNTokensUsed(0);
+        axios.get(`${backendUrl}/reset-session`, {withCredentials: true});
 
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
