@@ -4,8 +4,6 @@ import axios from 'axios'
 import TagManager from 'react-gtm-module'
 import FeedbackForm from "./FeedbackForm";
 
-const backendUrl = `${process.env.REACT_APP_BACKEND_URL}`
-
 const tagManagerArgs = {
     gtmId: 'G-922DE7HPS1'
 }
@@ -79,7 +77,7 @@ const Chatbot = () => {
     useEffect(() => {
         const login = async () => {
             try {
-                await axios.get(`${backendUrl}/login`, {withCredentials: true});
+                await axios.get(`/login`, {withCredentials: true});
                 console.log('Logged in successfully');
             } catch (error) {
                 console.error('Error logging in', error);
@@ -91,7 +89,7 @@ const Chatbot = () => {
     const botResponse = async (rawText: string) => {
         const config = {params: {question: rawText}, withCredentials: true,};
         try {
-            const response = await axios.get<BotResponse>(backendUrl + '/answer', config)
+            const response = await axios.get<BotResponse>('/answer', config)
             const data = response.data
 
             const msgText: MessageContent = {type: 'text', data: data.answer, id: data.id}
@@ -119,7 +117,7 @@ const Chatbot = () => {
         ]);
         localStorage.removeItem('messages');
         setNTokensUsed(0);
-        axios.get(`${backendUrl}/reset-session`, {withCredentials: true});
+        axios.get(`/reset-session`, {withCredentials: true});
 
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -154,7 +152,8 @@ const Chatbot = () => {
                                 <div className="msg-info">
                                     <div className="msg-info-name">{message.name}</div>
                                     <div className="msg-info-time">{formatDate(message.time)}</div>
-                                    {message.name === BOT_NAME && message.text.id && <FeedbackForm messageId={message.text.id} />}
+                                    {message.name === BOT_NAME && message.text.id &&
+                                        <FeedbackForm messageId={message.text.id}/>}
                                 </div>
                                 <div className="msg-text">
                                     {message.text.type === 'text' && message.text.data}

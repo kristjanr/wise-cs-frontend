@@ -1,18 +1,15 @@
 import React, {CSSProperties, useState} from "react";
 import Modal from 'react-modal'
-import axios from "axios";
 
 
 interface FeedbackFormProps {
     messageId: number;
 }
 
-const backendUrl = `${process.env.REACT_APP_BACKEND_URL}`
 
-
-const FeedbackForm: React.FC<FeedbackFormProps> = ({ messageId }) => {
+const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [feedbackType, setFeedbackType] = useState<'good'|'bad' | null>(null); // new state for feedback type
+    const [feedbackType, setFeedbackType] = useState<'good' | 'bad' | null>(null); // new state for feedback type
     const [additionalFeedback, setAdditionalFeedback] = useState('');
     const closeModal = () => {
         setModalIsOpen(false);
@@ -39,8 +36,22 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ messageId }) => {
 
         // Send the feedback to the backend
         try {
-            const response = await axios.post(`${backendUrl}/feedback`, feedbackData, { withCredentials: true });
-            console.log(response.data);
+            const response = await fetch(`/feedback`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(feedbackData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            console.log(data);
         } catch (error) {
             console.error('Error sending feedback:', error);
         }
@@ -48,6 +59,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ messageId }) => {
         // Close the modal
         setModalIsOpen(false);
     };
+
     type ModalStyles = {
         overlay?: CSSProperties;
         content?: CSSProperties;
@@ -88,7 +100,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ messageId }) => {
                     <form className="modal-content" onSubmit={handleSubmit}>
                         <label>
                             Additional feedback for 👍
-                            <textarea className="feedback-textarea" value={additionalFeedback} onChange={e => setAdditionalFeedback(e.target.value)} />
+                            <textarea className="feedback-textarea" value={additionalFeedback}
+                                      onChange={e => setAdditionalFeedback(e.target.value)}/>
                         </label>
                         <button className="msger-send-btn" type="submit">Give feedback</button>
                     </form>
@@ -100,7 +113,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ messageId }) => {
                     <form className="modal-content" onSubmit={handleSubmit}>
                         <label>
                             Additional feedback for 👎
-                            <textarea className="feedback-textarea" value={additionalFeedback} onChange={e => setAdditionalFeedback(e.target.value)} />
+                            <textarea className="feedback-textarea" value={additionalFeedback}
+                                      onChange={e => setAdditionalFeedback(e.target.value)}/>
                         </label>
                         <button className="msger-send-btn" type="submit">Give feedback</button>
                     </form>
