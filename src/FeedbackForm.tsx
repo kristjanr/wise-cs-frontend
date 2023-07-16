@@ -35,25 +35,18 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
         };
 
         // Send the feedback to the backend
-        try {
-            const response = await fetch(`/feedback`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(feedbackData)
-            });
+        const response = await fetch(`/feedback`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(feedbackData)
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            console.log(data);
-        } catch (error) {
-            console.error('Error sending feedback:', error);
+        if (!response.ok) {
+            const data = await response.text();
+            console.error('Error sending feedback:', data);
         }
 
         // Close the modal
