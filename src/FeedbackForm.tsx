@@ -23,6 +23,11 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
         setModalIsOpen(true);
         setFeedbackType('bad');
     };
+    const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        e.target.style.height = "inherit";
+        e.target.style.height = `${e.target.scrollHeight}px`;
+        setAdditionalFeedback(e.target.value);
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,6 +52,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
         if (!response.ok) {
             const data = await response.text();
             console.error('Error sending feedback:', data);
+        } else {
+            setAdditionalFeedback('')
         }
 
         // Close the modal
@@ -93,10 +100,12 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
                     <form className="modal-content" onSubmit={handleSubmit}>
                         <label>
                             Additional feedback for 👍
-                            <textarea className="feedback-textarea" value={additionalFeedback}
-                                      onChange={e => setAdditionalFeedback(e.target.value)}/>
                         </label>
-                        <button className="msger-send-btn" type="submit">Give feedback</button>
+                        <textarea className="feedback-textarea" value={additionalFeedback}
+                                  onChange={handleTextAreaChange}/>
+                        <div className="feedback-button-container">
+                            <button className="msger-send-btn button" type="submit">Give feedback</button>
+                        </div>
                     </form>
                 </Modal>
             )}
@@ -106,10 +115,12 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
                     <form className="modal-content" onSubmit={handleSubmit}>
                         <label>
                             Additional feedback for 👎
-                            <textarea className="feedback-textarea" value={additionalFeedback}
-                                      onChange={e => setAdditionalFeedback(e.target.value)}/>
                         </label>
-                        <button className="msger-send-btn" type="submit">Give feedback</button>
+                        <textarea className="feedback-textarea" value={additionalFeedback}
+                                  onChange={handleTextAreaChange}/>
+                        <div className="feedback-button-container">
+                            <button className="msger-send-btn" type="submit">Give feedback</button>
+                        </div>
                     </form>
                 </Modal>
             )}
