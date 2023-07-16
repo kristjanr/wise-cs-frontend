@@ -77,7 +77,7 @@ const Chatbot = () => {
     useEffect(() => {
         const login = async () => {
             try {
-                await axios.get(`/login`, {withCredentials: true});
+                await axios.post(`/login`, {withCredentials: true});
                 console.log('Logged in successfully');
             } catch (error) {
                 console.error('Error logging in', error);
