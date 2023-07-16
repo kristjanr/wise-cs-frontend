@@ -150,12 +150,12 @@ body {
   background: #ddd;
 }
 .msger-send-btn {
-  margin-left: 10px;
   background: #579ffb;
   color: #fff;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.23s;
+  border: none;
 }
 .msger-send-btn:hover {
   background: #4883cd
@@ -242,12 +242,6 @@ button {
 }
 
 .modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 400px;
 }
 
 .modal-content label {

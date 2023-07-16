@@ -77,8 +77,9 @@ const Chatbot = () => {
     useEffect(() => {
         const login = async () => {
             try {
-                await axios.post(`/login`, {withCredentials: true});
-                console.log('Logged in successfully');
+                const response = await axios.post(`/login`, {withCredentials: true});
+                setNTokensUsed(response.data.n_tokens_used);
+
             } catch (error) {
                 console.error('Error logging in', error);
             }
@@ -99,7 +100,7 @@ const Chatbot = () => {
                 const msgLinks: MessageContent = {type: 'links', data: data.urls_used, id: undefined}
                 appendMessage(BOT_NAME, 'left', msgLinks)
             }
-            setNTokensUsed(data.n_tokens_used); // Set the n_tokens_used value
+            setNTokensUsed(data.n_tokens_used);
 
         } catch (error) {
             console.error(error)
@@ -117,7 +118,7 @@ const Chatbot = () => {
         ]);
         localStorage.removeItem('messages');
         setNTokensUsed(0);
-        axios.get(`/reset-session`, {withCredentials: true});
+        axios.post(`/reset-session`, {withCredentials: true});
 
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
