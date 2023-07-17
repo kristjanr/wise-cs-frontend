@@ -91,8 +91,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({messageId}) => {
     };
     return (
         <div>
-            <button className="feedback-button feedback-button-thumbs-up" onClick={handleThumbsUp}>👍</button>
             <button className="feedback-button feedback-button-thumbs-down" onClick={handleThumbsDown}>👎</button>
+            <button className="feedback-button feedback-button-thumbs-up" onClick={handleThumbsUp}>👍</button>
 
             {feedbackType === 'good' && (
                 <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={modalStyles}>

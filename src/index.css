@@ -211,11 +211,10 @@ button {
   border: none;
   background: none;
   transition: color 0.3s;
-  font-size: 0.5em; /* Makes the icons twice smaller */
 }
 
 .feedback-button-thumbs-up {
-  margin-left: 20px;
+  margin-left: 1px;
 }
 
 .feedback-button-thumbs-up:hover {
@@ -223,7 +222,7 @@ button {
 }
 
 .feedback-button-thumbs-down {
-  margin-left: 1px;
+  margin-left: 20px;
 }
 
 .feedback-button-thumbs-down:hover {
