@@ -3,6 +3,7 @@ import axios from 'axios'
 // @ts-ignore
 import TagManager from 'react-gtm-module'
 import FeedbackForm from "./FeedbackForm";
+import {ClipLoader} from "react-spinners";
 
 const tagManagerArgs = {
     gtmId: 'G-922DE7HPS1'
@@ -61,6 +62,7 @@ const Chatbot = () => {
     })
     const [inputText, setInputText] = useState('')
     const [nTokensUsed, setNTokensUsed] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('messages', JSON.stringify(messages))
@@ -88,6 +90,7 @@ const Chatbot = () => {
         login();
     }, []);
     const botResponse = async (rawText: string) => {
+        setIsLoading(true);
         const config = {params: {question: rawText}, withCredentials: true,};
         try {
             const response = await axios.get<BotResponse>('/answer', config)
@@ -101,11 +104,14 @@ const Chatbot = () => {
                 appendMessage(BOT_NAME, 'left', msgLinks)
             }
             setNTokensUsed(data.n_tokens_used);
+            setIsLoading(false);
 
         } catch (error) {
             console.error(error)
+            setIsLoading(false);
         }
     }
+
 
     const handleResetSession = () => {
         setMessages([
@@ -157,7 +163,9 @@ const Chatbot = () => {
                                         <FeedbackForm messageId={message.text.id}/>}
                                 </div>
                                 <div className="msg-text">
-                                    {message.text.type === 'text' && message.text.data}
+                                    {message.text.type === 'text' && message.text.data.split('\n').map((item, key) => {
+                                        return <span key={key}>{item}<br/></span>
+                                    })}
 
                                     {message.text.type === 'links' && (
                                         <>
@@ -175,7 +183,7 @@ const Chatbot = () => {
                         </div>
                     ))}
                 </main>
-                <form className="msger-inputarea" onSubmit={handleSubmit}>
+                {!isLoading && <form className="msger-inputarea" onSubmit={handleSubmit}>
                     <input
                         type="text"
                         className="msger-input"
@@ -186,7 +194,8 @@ const Chatbot = () => {
                     <button type="submit" className="msger-send-btn">
                         Send
                     </button>
-                </form>
+                </form>}
+                {isLoading && <div className="spinner-container"><ClipLoader color="#4A90E2" size={50} /></div>}
             </section>
             <footer className="footer">
                 <>

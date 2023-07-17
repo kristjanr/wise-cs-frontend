@@ -271,3 +271,9 @@ border-radius: 3px;
 font-size: 1em;
 padding: 10px;
 }
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
